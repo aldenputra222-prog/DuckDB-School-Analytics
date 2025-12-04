@@ -1,29 +1,35 @@
 # 🦆 DuckDB SQL Analytics: School Data Analysis
 
-Repository ini demonstrasi penggunaan **DuckDB** (In-process OLAP Database) untuk melakukan analisis data pendidikan menggunakan perintah SQL modern. 
+Repository ini berisi demonstrasi penggunaan **DuckDB** (In-process OLAP Database) untuk melakukan analisis data pendidikan menggunakan perintah SQL modern.
 
-Tujuan project ini adalah membuktikan efisiensi pengolahan data lokal. Kita dapat mengolah file `Parquet` secara langsung tanpa perlu loading ke database server tradisional (seperti MySQL/PostgreSQL), menghasilkan performa analisis dengan *sub-second latency*.
+Project ini mensimulasikan **Analytics Layer** dalam arsitektur Modern Data Stack. Script ini fokus pada transformasi dan analisis data yang sudah ter-materialisasi dalam format `Parquet`, meniru cara kerja **dbt (data build tool)** dalam mengelola data warehouse tanpa membebani infrastruktur server.
 
 ## 📊 Overview
 
-Script ini mensimulasikan alur kerja seorang **Data Analyst** dalam mengubah data mentah menjadi *actionable insights*:
+Script ini mensimulasikan pekerjaan seorang **Data Analyst/Analytics Engineer** dalam mengolah data:
 
-1.  **Data Filtering**: Menggunakan `SELECT` dan `WHERE` untuk memfilter entitas sekolah spesifik.
-2.  **Aggregation**: Menggunakan `GROUP BY`, `COUNT`, dan `SUM` untuk rekapitulasi statistik makro.
-3.  **Comparative Analysis**: Mengimplementasikan **CTE (Common Table Expressions)** dan **JOIN** untuk membandingkan kepadatan siswa antara dua kota secara *head-to-head*.
-4.  **Robustness**: Script dilengkapi fitur pengecekan file otomatis untuk memastikan integritas data sebelum analisis dimulai.
+1.  **Data Filtering**: Menggunakan `SELECT` dan `WHERE` (Slicing & Dicing).
+2.  **Aggregation**: Menggunakan `GROUP BY`, `COUNT`, dan `SUM` untuk statistik makro.
+3.  **Comparative Analysis**: Mengimplementasikan logika SQL kompleks dengan **CTE (Common Table Expressions)** dan **JOIN** untuk membandingkan performa dua dataset kota (Benchmarking).
 
 ## 🛠️ Teknologi
 
-* **Python 3.x**: Bahasa pemrograman utama.
-* **DuckDB**: "SQLite for Analytics" - database kolom (columnar) yang sangat cepat untuk analisis query.
+* **Python 3.x**: Sebagai *orchestrator* untuk menjalankan query.
+* **DuckDB**: Engine SQL kolom (columnar) yang sangat cepat, digunakan untuk memproses file Parquet secara lokal (*in-memory*).
 
-## 📥 Sumber Data (Data Source)
+## 📥 Sumber Data & Konsep Materialisasi
 
-Script ini membutuhkan file dataset dalam format `.parquet` atau `.csv`. 
-Agar analisis berjalan, Anda membutuhkan data sekolah yang valid. Saya telah menyediakan tools untuk mengambil data tersebut secara otomatis di repository terpisah:
+Dalam skenario dunia nyata (seperti penggunaan **dbt**), data mentah dari sumber (Raw Data) akan di-*materialized* terlebih dahulu menjadi format yang efisien sebelum dianalisis.
 
-👉 **[Ambil Data Sekolah via Scraper Di Sini](https://github.com/aldenputra222-prog/Scrapping-Data-from-Web)**
+Repository ini mengasumsikan Anda sudah memiliki data yang telah diubah ke format `.parquet`.
+
+👉 **Langkah 1: Ambil Data Mentah (Raw)**
+Gunakan tool scraper yang telah saya sediakan di repository terpisah untuk mendapatkan data sekolah:
+**[Link Repository Scraper (CSV Generator)](https://github.com/aldenputra222-prog/Scrapping-Data-from-Web)**
+
+👉 **Langkah 2: Materialisasi Data**
+Pastikan output CSV dari scraper tersebut disimpan/dikonversi menjadi format `.parquet`.
+*(Ini mensimulasikan proses 'Bronze to Silver' layer dalam Data Engineering)*.
 
 ## 📂 Cara Menjalankan
 
@@ -33,12 +39,17 @@ Agar analisis berjalan, Anda membutuhkan data sekolah yang valid. Saya telah men
     cd DuckDB-School-Analytics
     ```
 
-2.  **Siapkan Data**
-    * Jalankan tool scraper di link di atas untuk mendapatkan data kota (misal: Yogyakarta dan Bogor).
-    * Pindahkan file hasil scraping (format `.parquet` atau `.csv`) ke dalam folder `result/` di project ini.
-    * *Note: Pastikan nama file sesuai dengan konfigurasi di script (default: `data_yogyakarta.parquet` dan `data_bogor.parquet`).*
+2.  **Siapkan Data (Staging)**
+    * Pastikan file `data_yogyakarta.parquet` dan `data_bogor.parquet` sudah tersedia di dalam folder `result/`.
+    * *Note: Script ini dirancang untuk membaca Parquet demi performa query sub-detik.*
 
-3.  **Jalankan Analisis**
+3.  **Edit Konfigurasi (Opsional)**
+    Jika nama file Anda berbeda, sesuaikan variabel di `analysis_duckdb.py`:
+    ```python
+    FILE_DATA_UTAMA    = 'result/nama_file_kamu.parquet'
+    ```
+
+4.  **Jalankan Analisis**
     ```bash
     python analysis_duckdb.py
     ```
@@ -46,10 +57,10 @@ Agar analisis berjalan, Anda membutuhkan data sekolah yang valid. Saya telah men
 ## 🧠 Penjelasan Query SQL
 
 ### `Common Table Expression (CTE)`
-Script ini menggunakan CTE (`WITH clause`) untuk menstrukturisasi query yang kompleks menjadi bagian-bagian modular. Ini membuat logika "Comparative Analysis" lebih mudah dibaca dan dipelihara.
+Script ini menggunakan CTE (`WITH clause`) sebagai pengganti tabel fisik sementara. Ini mirip dengan konsep **Ephemeral Models** di dbt, di mana logika transformasi disimpan dalam memori untuk menjaga kebersihan *lineage* data.
 
 ### `Data Type Casting`
-Data mentah dari web seringkali bertipe string/text. Saya menggunakan fungsi `TRY_CAST(column AS INTEGER)` untuk memastikan proses kalkulasi angka berjalan aman (tanpa error/crash) meskipun terdapat data kotor (*dirty data*).
+Menggunakan fungsi `TRY_CAST(column AS INTEGER)` untuk menangani inkonsistensi tipe data (*Dirty Data Handling*) secara *on-the-fly* saat query dijalankan.
 
 ---
-**Disclaimer:** Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan Data Analysis.
+**Disclaimer:** Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan demonstrasi SQL Logic.
