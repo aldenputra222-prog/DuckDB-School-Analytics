@@ -25,16 +25,17 @@ Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering Lifecy
 1. Data Transformation (ELT)
 File export_to_parquet.sql merepresentasikan layer Transformation. Di fase ini, data mentah dibersihkan dan diubah menjadi format Parquet agar hemat penyimpanan dan mempercepat proses baca (I/O).
 
--- Simulasi Model dbt (export_to_parquet.sql)
-{{ config(
-    materialized='external',
-    location='result/data_bogor.parquet'
-) }}
-
-SELECT *
-FROM {{ ref('raw_school_data') }}
--- Logic cleaning dan casting tipe data terjadi di sini
-
+--- Simulasi Model dbt (export_to_parquet.sql)
+```bash
+COPY (
+    SELECT 
+        nama_sekolah,
+        CAST(jumlah_siswa AS INTEGER) as total_siswa,
+        kota_administrasi
+    FROM read_csv_auto('seeds/raw_school_data.csv')
+    WHERE jumlah_siswa IS NOT NULL
+) TO 'result/data_bogor.parquet' (FORMAT 'PARQUET');
+```
 Input: CSV dari folder seeds/.
 
 Output: File .parquet yang tersimpan di folder result/.
