@@ -1,66 +1,56 @@
-# 🦆 DuckDB SQL Analytics: School Data Analysis
+🦆 DuckDB SQL Analytics: School Data Analysis
+Repository ini berisi demonstrasi penggunaan DuckDB (In-process OLAP Database) dan dbt untuk membangun pipeline analisis data pendidikan.
 
-Repository ini berisi demonstrasi penggunaan **DuckDB** (In-process OLAP Database) untuk melakukan analisis data pendidikan menggunakan perintah SQL modern.
+Project ini mensimulasikan arsitektur Local Data Lakehouse, di mana transformasi data dan analisis dilakukan secara terpisah namun terintegrasi.
 
-Project ini mensimulasikan **Analytics Layer** dalam arsitektur Modern Data Stack. Script ini fokus pada transformasi dan analisis data yang sudah ter-materialisasi dalam format `Parquet`, meniru cara kerja **dbt (data build tool)** dalam mengelola data warehouse tanpa membebani infrastruktur server.
+📂 Struktur Project
+analysis_duckdb.py: Script Python utama untuk melakukan query analisis (Analytics Layer).
 
-## 📊 Overview
+export_to_parquet.sql: File model SQL (simulasi dbt) yang mendefinisikan logika transformasi data mentah ke format Parquet.
 
-Script ini mensimulasikan pekerjaan seorang **Data Analyst/Analytics Engineer** dalam mengolah data:
+seeds/: Folder tempat menyimpan Raw Data. (csv)
 
-1.  **Data Filtering**: Menggunakan `SELECT` dan `WHERE` (Slicing & Dicing).
-2.  **Aggregation**: Menggunakan `GROUP BY`, `COUNT`, dan `SUM` untuk statistik makro.
-3.  **Comparative Analysis**: Mengimplementasikan logika SQL kompleks dengan **CTE (Common Table Expressions)** dan **JOIN** untuk membandingkan performa dua dataset kota (Benchmarking).
+result/: Folder output (Data Lake) tempat file Parquet disimpan.
 
-## 🛠️ Teknologi
+🛠️ Alur Kerja (Workflow)
+Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering:
 
-* **Python 3.x**: Sebagai *orchestrator* untuk menjalankan query.
-* **DuckDB**: Engine SQL kolom (columnar) yang sangat cepat, digunakan untuk memproses file Parquet secara lokal (*in-memory*).
+1. Data Transformation (export_to_parquet.sql)
+File ini merepresentasikan layer Transformation. Di sinilah data mentah dibersihkan dan diubah menjadi format Parquet.
 
-## 📥 Sumber Data & Konsep Materialisasi
+SQL
 
-Dalam skenario dunia nyata (seperti penggunaan **dbt**), data mentah dari sumber (Raw Data) akan di-*materialized* terlebih dahulu menjadi format yang efisien sebelum dianalisis.
+-- Cuplikan logika dari export_to_parquet.sql
+{{ config(
+    materialized='external',
+    location='target/data_Bogor.parquet'
+) }}
+...
+Fungsi: Mengubah data CSV menjadi format columnar (Parquet) agar hemat penyimpanan dan cepat dibaca.
 
-Repository ini mengasumsikan Anda sudah memiliki data yang telah diubah ke format `.parquet`.
+Output: Menghasilkan file .parquet di folder target.
 
-👉 **Langkah 1: Ambil Data Mentah (Raw)**
-Gunakan tool scraper yang telah saya sediakan di repository terpisah untuk mendapatkan data sekolah:
-**[Link Repository Scraper (CSV Generator)](https://github.com/aldenputra222-prog/Scrapping-Data-from-Web)**
+2. Data Analytics (analysis_duckdb.py)
+Setelah data diubah menjadi Parquet, script Python ini bertindak sebagai Consumer.
 
-👉 **Langkah 2: Materialisasi Data**
-Pastikan output CSV dari scraper tersebut disimpan/dikonversi menjadi format `.parquet`.
-*(Ini mensimulasikan proses 'Bronze to Silver' layer dalam Data Engineering)*.
+Melakukan filtering (WHERE) & Aggregation (GROUP BY).
 
-## 📂 Cara Menjalankan
+Menggunakan DuckDB untuk memproses file Parquet tersebut secara instan (sub-second query).
 
-1.  **Clone Repository Ini**
-    ```bash
-    git clone [https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git](https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git)
-    cd DuckDB-School-Analytics
-    ```
+Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
 
-2.  **Siapkan Data (Staging)**
-    * Pastikan file `data_yogyakarta.parquet` dan `data_bogor.parquet` sudah tersedia di dalam folder `result/`.
-    * *Note: Script ini dirancang untuk membaca Parquet demi performa query sub-detik.*
+📥 Cara Menjalankan
+Clone Repository
 
-3.  **Edit Konfigurasi (Opsional)**
-    Jika nama file Anda berbeda, sesuaikan variabel di `analysis_duckdb.py`:
-    ```python
-    FILE_DATA_UTAMA    = 'result/nama_file_kamu.parquet'
-    ```
+Bash
 
-4.  **Jalankan Analisis**
-    ```bash
-    python analysis_duckdb.py
-    ```
+git clone https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git
+cd DuckDB-School-Analytics
+Siapkan Data Pastikan file Parquet sudah tersedia di folder result/ (dihasilkan dari proses transformasi sebelumnya).
 
-## 🧠 Penjelasan Query SQL
+Jalankan Analisis
 
-### `Common Table Expression (CTE)`
-Script ini menggunakan CTE (`WITH clause`) sebagai pengganti tabel fisik sementara. Ini mirip dengan konsep **Ephemeral Models** di dbt, di mana logika transformasi disimpan dalam memori untuk menjaga kebersihan *lineage* data.
+Bash
 
-### `Data Type Casting`
-Menggunakan fungsi `TRY_CAST(column AS INTEGER)` untuk menangani inkonsistensi tipe data (*Dirty Data Handling*) secara *on-the-fly* saat query dijalankan.
-
----
-**Disclaimer:** Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan demonstrasi SQL Logic.
+python analysis_duckdb.py
+Disclaimer: Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan demonstrasi implementasi Local Data Lakehouse sederhana.
