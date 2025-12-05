@@ -17,6 +17,7 @@ Berikut adalah peta struktur file dalam repository ini:
  ┣ 📜 analysis_duckdb.py     # Analytics Layer (Python Script untuk query & analisis)
  ┣ 📜 export_to_parquet.sql  # Transformation Layer (Logika konversi CSV ke Parquet)
  ┗ 📜 README.md              # Dokumentasi Project
+```
 
 ## 🛠️ Alur Kerja (Workflow)
 Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering Lifecycle:
