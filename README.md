@@ -18,7 +18,7 @@ Berikut adalah peta struktur file dalam repository ini:
  ┣ 📜 export_to_parquet.sql  # Transformation Layer (Logika konversi CSV ke Parquet)
  ┗ 📜 README.md              # Dokumentasi Project
 
- 🛠️ Alur Kerja (Workflow)
+## 🛠️ Alur Kerja (Workflow)
 Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering Lifecycle:
 
 1. Data Transformation (ELT)
@@ -47,7 +47,7 @@ Setelah data matang (Parquet), script analysis_duckdb.py bertindak sebagai Consu
 
 🔄 Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
 
-🚀 Cara Menjalankan
+## 🚀 Cara Menjalankan
 Ikuti langkah-langkah berikut untuk mencoba project ini di komputer Anda:
 
 1. Clone Repository
