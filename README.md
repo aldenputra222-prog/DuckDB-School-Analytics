@@ -1,56 +1,69 @@
 🦆 DuckDB SQL Analytics: School Data Analysis
-Repository ini berisi demonstrasi penggunaan DuckDB (In-process OLAP Database) dan dbt untuk membangun pipeline analisis data pendidikan.
+Local Data Lakehouse Simulation | Build efficient data pipelines without a server.
 
-Project ini mensimulasikan arsitektur Local Data Lakehouse, di mana transformasi data dan analisis dilakukan secara terpisah namun terintegrasi.
+Repository ini mendemonstrasikan penggunaan DuckDB (In-process OLAP Database) dan prinsip dbt untuk membangun pipeline analisis data pendidikan yang ringan namun powerful.
+
+Project ini mensimulasikan arsitektur Local Data Lakehouse, di mana proses Storage, Compute, dan Transformation dilakukan secara terpisah namun terintegrasi dalam satu lingkungan lokal.
 
 📂 Struktur Project
-analysis_duckdb.py: Script Python utama untuk melakukan query analisis (Analytics Layer).
-
-export_to_parquet.sql: File model SQL (simulasi dbt) yang mendefinisikan logika transformasi data mentah ke format Parquet.
-
-seeds/: Folder tempat menyimpan Raw Data. (csv)
-
-result/: Folder output (Data Lake) tempat file Parquet disimpan.
-
-🛠️ Alur Kerja (Workflow)
-Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering:
-
-1. Data Transformation (export_to_parquet.sql)
-File ini merepresentasikan layer Transformation. Di sinilah data mentah dibersihkan dan diubah menjadi format Parquet.
-
-SQL
-
--- Cuplikan logika dari export_to_parquet.sql
-{{ config(
-    materialized='external',
-    location='target/data_Bogor.parquet'
-) }}
-...
-Fungsi: Mengubah data CSV menjadi format columnar (Parquet) agar hemat penyimpanan dan cepat dibaca.
-
-Output: Menghasilkan file .parquet di folder target.
-
-2. Data Analytics (analysis_duckdb.py)
-Setelah data diubah menjadi Parquet, script Python ini bertindak sebagai Consumer.
-
-Melakukan filtering (WHERE) & Aggregation (GROUP BY).
-
-Menggunakan DuckDB untuk memproses file Parquet tersebut secara instan (sub-second query).
-
-Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
-
-📥 Cara Menjalankan
-Clone Repository
+Berikut adalah peta struktur file dalam repository ini:
 
 Bash
 
-git clone https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git
-cd DuckDB-School-Analytics
-Siapkan Data Pastikan file Parquet sudah tersedia di folder result/ (dihasilkan dari proses transformasi sebelumnya).
+📦 DuckDB-School-Analytics
+ ┣ 📂 seeds/                 # Raw Data (Format CSV mentah)
+ ┣ 📂 result/                # Data Lake Storage (Output file .parquet)
+ ┣ 📜 analysis_duckdb.py     # Analytics Layer (Python Script untuk query & analisis)
+ ┣ 📜 export_to_parquet.sql  # Transformation Layer (Logika konversi CSV ke Parquet)
+ ┗ 📜 README.md              # Dokumentasi Project
+🛠️ Alur Kerja (Workflow)
+Repository ini mendemonstrasikan dua tahapan utama dalam Data Engineering Lifecycle:
 
-Jalankan Analisis
+1. Data Transformation (ELT)
+File export_to_parquet.sql merepresentasikan layer Transformation. Di fase ini, data mentah dibersihkan dan diubah menjadi format Parquet agar hemat penyimpanan dan mempercepat proses baca (I/O).
+
+SQL
+
+-- Simulasi Model dbt (export_to_parquet.sql)
+{{ config(
+    materialized='external',
+    location='result/data_bogor.parquet'
+) }}
+
+SELECT *
+FROM {{ ref('raw_school_data') }}
+-- Logic cleaning dan casting tipe data terjadi di sini
+Input: CSV dari folder seeds/.
+
+Output: File .parquet yang tersimpan di folder result/.
+
+2. Data Analytics
+Setelah data matang (Parquet), script analysis_duckdb.py bertindak sebagai Consumer. Script ini menggunakan kekuatan DuckDB untuk:
+
+✅ Melakukan Filtering (WHERE) & Aggregation (GROUP BY).
+
+⚡ Memproses file Parquet secara instan (sub-second query performance).
+
+🔄 Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
+
+🚀 Cara Menjalankan
+Ikuti langkah-langkah berikut untuk mencoba project ini di komputer Anda:
+
+1. Clone Repository
+Buka terminal dan jalankan perintah berikut:
+
+Bash
+
+git clone [https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git](https://github.com/aldenputra222-prog/DuckDB-School-Analytics.git)
+cd DuckDB-School-Analytics
+2. Siapkan Data (Materialization)
+Pastikan file Parquet sudah tersedia di folder result/. (Dalam skenario nyata, file ini dihasilkan oleh dbt run atau script ingestion).
+
+3. Jalankan Analisis
+Jalankan script Python untuk melihat hasil benchmark dan analisis data sekolah:
 
 Bash
 
 python analysis_duckdb.py
-Disclaimer: Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan demonstrasi implementasi Local Data Lakehouse sederhana.
+📝 Disclaimer
+Project ini dibuat untuk tujuan edukasi, portofolio Data Engineering, dan demonstrasi implementasi Local Data Lakehouse sederhana.
