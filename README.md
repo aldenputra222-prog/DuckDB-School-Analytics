@@ -50,7 +50,7 @@ Setelah data matang (Parquet), script analysis_duckdb.py bertindak sebagai Consu
 
 🔄 Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
 
-Rasakan perbedaan kecepatannya! Script ini membuktikan betapa powerful-nya kombinasi DuckDB dan Parquet dibandingkan pembacaan CSV biasa. Jalankan analysis_pandas.py lalu analysis_duckdb.py, dan lihat bagaimana query modern memangkas waktu proses secara drastis.
+Rasakan perbedaan kecepatannya! Script ini membuktikan betapa powerful-nya kombinasi DuckDB dan Parquet dibandingkan pembacaan CSV biasa. Jalankan analysis_csv.py lalu analysis_duckdb.py, dan lihat bagaimana query modern memangkas waktu proses secara drastis.
 
 ## 🚀 Cara Menjalankan
 Ikuti langkah-langkah berikut untuk mencoba project ini di komputer Anda:
