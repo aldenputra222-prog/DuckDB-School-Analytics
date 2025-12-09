@@ -4,4 +4,4 @@
 ) }}
 
 SELECT *
-FROM {{ ref('data_bogor.csv') }} --namafilecsv
+FROM {{ ref('data_Bogor.csv') }} --namafilecsv

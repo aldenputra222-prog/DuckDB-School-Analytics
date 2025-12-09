@@ -14,7 +14,8 @@ Berikut adalah peta struktur file dalam repository ini:
 📦 DuckDB-School-Analytics
  ┣ 📂 seeds/                 # Raw Data (Format CSV mentah)
  ┣ 📂 result/                # Data Lake Storage (Output file .parquet)
- ┣ 📜 analysis_duckdb.py     # Analytics Layer (Python Script untuk query & analisis)
+ ┣ 📜 analysis_csv.py        # Analytics Layer (CSV)
+ ┣ 📜 analysis_duckdb.py     # Analytics Layer (Parquet)
  ┣ 📜 export_to_parquet.sql  # Transformation Layer (Logika konversi CSV ke Parquet)
  ┗ 📜 README.md              # Dokumentasi Project
 ```
@@ -48,6 +49,8 @@ Setelah data matang (Parquet), script analysis_duckdb.py bertindak sebagai Consu
 ⚡ Memproses file Parquet secara instan (sub-second query performance).
 
 🔄 Melakukan komparasi data antar kota menggunakan CTE dan JOIN.
+
+Rasakan perbedaan kecepatannya! Script ini membuktikan betapa powerful-nya kombinasi DuckDB dan Parquet dibandingkan pembacaan CSV biasa. Jalankan analysis_pandas.py lalu analysis_duckdb.py, dan lihat bagaimana query modern memangkas waktu proses secara drastis.
 
 ## 🚀 Cara Menjalankan
 Ikuti langkah-langkah berikut untuk mencoba project ini di komputer Anda:
